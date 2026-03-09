@@ -256,6 +256,8 @@ Background threads:                  ├─ deliver to app
 Computer Networks Project — Reliable UDP Telemetry Protocol
 ## Authors
 -Merwyn Prince Lobo (https://github.com/Merwyn-Prince-Lobo)
+
 -Karthik R Nayak (https://github.com/Karthik-R-Nayak)
+
 -Sneha Panini (https://github.com/sneha-panini)
 
