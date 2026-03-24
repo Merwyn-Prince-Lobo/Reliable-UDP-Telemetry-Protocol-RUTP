@@ -5,6 +5,7 @@ Receives telemetry packets, sends ACK/NACK, logs received data.
 Usage:
     python server.py [--host 0.0.0.0] [--port 9000] [--loss-sim 0.0]
 """
+import threading
 from threaded_server import ThreadedServerWrapper
 import socket
 import argparse
@@ -37,7 +38,7 @@ class TelemetrySession:
         self.out_of_order = 0
         self.start_time  = time.time()
         self.buffer      = {}       # seq → payload (reorder buffer)
-
+        self.lock=threading.Lock()
     def stats(self):
         elapsed = time.time() - self.start_time
         return {
@@ -51,13 +52,17 @@ class TelemetrySession:
 
 class ReliableUDPServer:
     def _process_packet(self, raw, addr):
-    msg_id, pkt_type, flags, seq, payload = parse_packet(raw)
+        try:
+            msg_id, pkt_type, flags, seq, payload = parse_packet(raw)
+        except Valueerror as e:
+            log.Warning(f"Bad packet from {adr}:{e}")
+            return
 
-    if pkt_type == PKT_HELLO:
+        if pkt_type == PKT_HELLO:
         self._handle_hello(addr, msg_id, seq)
-    elif pkt_type == PKT_DATA:
+        elif pkt_type == PKT_DATA:
         self._handle_data(addr, msg_id, seq, payload)
-    elif pkt_type == PKT_BYE:
+        elif pkt_type == PKT_BYE:
         self._handle_bye(addr, msg_id, seq)
 
     
@@ -72,10 +77,11 @@ class ReliableUDPServer:
         log.info(f"Listening on {host}:{port}  (ACK loss simulation={loss_sim*100:.0f}%)")
 
     def _get_session(self, addr) -> TelemetrySession:
-        if addr not in self.sessions:
-            self.sessions[addr] = TelemetrySession(addr)
-            log.info(f"New session from {addr}")
-        return self.sessions[addr]
+        with self.lock:
+             if addr not in self.sessions:
+                 self.sessions[addr] = TelemetrySession(addr)
+                 log.info(f"New session from {addr}")
+            return self.sessions[addr]
 
     def _send_ack(self, addr, msg_id: int, seq: int):
         """Send ACK, optionally simulating loss for testing."""
