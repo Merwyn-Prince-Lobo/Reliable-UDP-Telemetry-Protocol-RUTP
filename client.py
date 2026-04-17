@@ -6,6 +6,8 @@ Usage:
     python client.py [--host 127.0.0.1] [--port 9000] [--count 20] [--interval 0.5]
 """
 
+#python3 client.py -127.0.0.1 -9000 
+
 import socket
 import argparse
 import logging
@@ -215,7 +217,7 @@ class ReliableUDPClient:
                 return
             time.sleep(0.05)
         log.warning("flush() timed out with unacked packets remaining")
-//hello merwyn
+
     def disconnect(self):
         """Send BYE and tear down."""
         bye = build_packet(self.msg_id, PKT_BYE, self.seq)
