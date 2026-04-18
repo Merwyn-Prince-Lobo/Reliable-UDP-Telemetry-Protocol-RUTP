@@ -6,7 +6,7 @@ Usage:
     python client.py [--host 127.0.0.1] [--port 9000] [--count 20] [--interval 0.5]
 """
 
-#python3 client.py -127.0.0.1 -9000 
+#command : python3 client.py -127.0.0.1 -9000 
 
 import socket
 import argparse
