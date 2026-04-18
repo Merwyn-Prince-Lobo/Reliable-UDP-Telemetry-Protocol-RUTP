@@ -3,11 +3,13 @@
 simulate_network.py — Apply / remove tc netem network conditions on loopback.
 
 Requires: iproute2 (tc), run as root or with sudo.
+tests various scenario
 
 Usage:
     sudo python simulate_network.py apply  --loss 10 --delay 50 --jitter 10
     sudo python simulate_network.py remove
     sudo python simulate_network.py status
+    
 """
 
 import subprocess
